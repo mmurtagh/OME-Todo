@@ -1,7 +1,8 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { Text, View } from 'react-native'
 
-export default function TodoDetail({ route }) {
+function TodoDetail({ route }) {
   const { data } = route.params
 
   return (
@@ -11,3 +12,5 @@ export default function TodoDetail({ route }) {
     </View>
   )
 }
+
+export default connect()(TodoDetail)
