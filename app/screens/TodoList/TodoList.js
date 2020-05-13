@@ -1,7 +1,8 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { Button, Text, View } from 'react-native'
 
-export default function TodoList({ navigation }) {
+function TodoList({ navigation, ...props }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>TodoList</Text>
@@ -15,6 +16,13 @@ export default function TodoList({ navigation }) {
         title="Change Filters"
         onPress={() => navigation.navigate('Filter')}
       />
+      <Text>{props.foo}</Text>
     </View>
   )
 }
+
+function mapStateToProps(state) {
+  return state
+}
+
+export default connect(mapStateToProps)(TodoList)
