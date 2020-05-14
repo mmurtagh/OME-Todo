@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import moment from 'moment'
 import { View } from 'react-native'
 import {
   Button,
@@ -18,9 +19,10 @@ export default function Todo({
   id,
   name,
   description,
-  targetCompletionDate,
+  targetDate,
   completionDate,
   navigation,
+  complete,
 }) {
   const isCompleted = !!completionDate
 
@@ -55,7 +57,7 @@ export default function Todo({
           <Subheading style={{ fontWeight: 'bold', paddingRight: 10 }}>
             Target Date:
           </Subheading>
-          <Text>{targetCompletionDate}</Text>
+          <Text>{targetDate ? moment(targetDate).format('ll') : 'None'}</Text>
         </View>
         <Divider />
         {isCompleted && (
@@ -69,21 +71,27 @@ export default function Todo({
               <Subheading style={{ fontWeight: 'bold', paddingRight: 10 }}>
                 Completion Date:
               </Subheading>
-              <Text>{targetCompletionDate}</Text>
+              <Text>{moment(completionDate).format('ll')}</Text>
             </View>
-            <Divider />
           </>
         )}
-        <View
-          style={{
-            flexDirection: 'row',
-          }}
-        >
-          <Subheading style={{ fontWeight: 'bold', paddingRight: 10 }}>
-            Description:
-          </Subheading>
-          <Paragraph style={{ flex: 1 }}>{description}</Paragraph>
-        </View>
+        {!!description && (
+          <>
+            <Divider />
+            <View
+              style={{
+                flexDirection: 'row',
+              }}
+            >
+              <Subheading style={{ fontWeight: 'bold', paddingRight: 10 }}>
+                Description:
+              </Subheading>
+              {!!description && (
+                <Paragraph style={{ flex: 1 }}>{description}</Paragraph>
+              )}
+            </View>
+          </>
+        )}
       </Card.Content>
       <Card.Actions>
         <Button
@@ -99,6 +107,7 @@ export default function Todo({
             icon="check-bold"
             color={getColor('success')}
             style={{ flex: 1, marginLeft: 5 }}
+            onPress={() => complete(id)}
           >
             Complete
           </Button>

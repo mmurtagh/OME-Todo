@@ -7,44 +7,13 @@ import { Button, FAB, Searchbar, IconButton, Portal } from 'react-native-paper'
 import Todo from './Todo'
 import FilterDialog from './FilterDialog'
 import { getColor } from '../../resources/colors'
+import { completeTodo } from '../../redux/actions'
 
-const fakeTodos = [
-  {
-    id: '1',
-    name: 'Call Mom',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa quae quas, eius ratione commodi reiciendis sit repellat ea porro aliquam?',
-    targetCompletionDate: 'Aug 14, 2020',
-    completionDate: '11/10/20',
-  },
-  {
-    id: '2',
-    name: 'Review water bill',
-    description: 'It was a lot higher this month for some reason.',
-    targetCompletionDate: '11/11/20',
-    completionDate: '',
-  },
-  {
-    id: '3',
-    name: 'Call Mom',
-    description: 'her birthday is coming up',
-    targetCompletionDate: '11/11/20',
-    completionDate: '',
-  },
-  {
-    id: '4',
-    name: 'Call Mom',
-    description: 'her birthday is coming up',
-    targetCompletionDate: '11/11/20',
-    completionDate: '',
-  },
-]
-
-function TodoList({ navigation, ...props }) {
+function TodoList({ navigation, todos, completeTodo }) {
   const [isDialogVisible, setIsDialogVisible] = useState(false)
 
   const renderItem = ({ item }) => {
-    return <Todo navigation={navigation} {...item} />
+    return <Todo navigation={navigation} {...item} complete={completeTodo} />
   }
 
   return (
@@ -65,7 +34,7 @@ function TodoList({ navigation, ...props }) {
             backgroundColor: getColor('primary'),
           }}
           icon="plus"
-          onPress={() => console.log('Pressed')}
+          onPress={() => navigation.navigate('TodoDetail', { id: null })}
         />
         <View style={{ padding: 10 }}>
           <View style={{ flexDirection: 'row' }}>
@@ -79,7 +48,7 @@ function TodoList({ navigation, ...props }) {
           <FlatList
             showsVerticalScrollIndicator={false}
             style={{ paddingTop: 10 }}
-            data={fakeTodos}
+            data={todos}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
           />
@@ -93,4 +62,13 @@ function mapStateToProps(state) {
   return state
 }
 
-export default connect(mapStateToProps)(TodoList)
+function mapDispatchToProps(dispatch) {
+  return {
+    completeTodo: (id) => dispatch(completeTodo(id)),
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TodoList)

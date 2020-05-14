@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import moment from 'moment'
 import { connect } from 'react-redux'
 import { Text, View, SafeAreaView } from 'react-native'
 import {
@@ -13,18 +14,60 @@ import {
 } from 'react-native-paper'
 import { getColor } from '../../resources/colors'
 import DateSelectDialog, { dialogMode } from './DateSelectDialog'
+import { addTodo, deleteTodo, updateTodo } from '../../redux/actions'
 
-function TodoDetail({ route }) {
+function TodoDetail({ route, todo = {}, update, add, remove, navigation }) {
   const { data } = route.params
-  const [nameValue, setNameValue] = useState('')
   const [descriptionValue, setDescriptionValue] = useState('')
   const [currentMode, setCurrentMode] = useState(dialogMode.hidden)
+  const [name, setName] = useState(todo.name)
+  const [description, setDescription] = useState(todo.description)
+  const [targetDate, setTargetDate] = useState(todo.targetDate || null)
+  const [completionDate, setCompletionDate] = useState(
+    todo.completionDate || null
+  )
+
+  const onAdd = () => {
+    navigation.goBack()
+
+    const newTodo = {
+      name,
+      description,
+      targetDate,
+      completionDate,
+    }
+
+    add(newTodo)
+  }
+
+  const onSaveChanges = () => {
+    navigation.goBack()
+
+    const modifiedTodo = {
+      ...todo,
+      name,
+      description,
+      targetDate,
+      completionDate,
+    }
+
+    update(modifiedTodo)
+  }
+
+  const onDelete = () => {
+    navigation.goBack()
+    remove(todo.id)
+  }
 
   return (
     <Portal.Host>
       <DateSelectDialog
         mode={currentMode}
         onHide={() => setCurrentMode(dialogMode.hidden)}
+        targetDate={targetDate}
+        completionDate={completionDate}
+        setTargetDate={setTargetDate}
+        setCompletionDate={setCompletionDate}
       />
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ padding: 10 }}>
@@ -33,17 +76,17 @@ function TodoDetail({ route }) {
               <TextInput
                 mode="outlined"
                 label="Name"
-                value={nameValue}
+                value={name}
                 style={{ backgroundColor: 'white', paddingBottom: 10 }}
-                onChangeText={(text) => setNameValue(text)}
+                onChangeText={(text) => setName(text)}
               />
               <TextInput
                 multiline
                 numberOfLines={5}
                 mode="outlined"
                 label="Description"
-                value={descriptionValue}
-                onChangeText={(text) => setDescriptionValue(text)}
+                value={description}
+                onChangeText={(text) => setDescription(text)}
                 style={{ backgroundColor: 'white', paddingBottom: 10 }}
               />
             </Card.Content>
@@ -63,7 +106,7 @@ function TodoDetail({ route }) {
                   icon="pencil"
                   onPress={() => setCurrentMode(dialogMode.targetDate)}
                 >
-                  Aug 14, 2020
+                  {targetDate ? moment(targetDate).format('ll') : 'None'}
                 </Button>
               </View>
             </Card.Content>
@@ -84,19 +127,26 @@ function TodoDetail({ route }) {
                   icon="pencil"
                   onPress={() => setCurrentMode(dialogMode.completionDate)}
                 >
-                  In Progress
+                  {completionDate
+                    ? moment(completionDate).format('ll')
+                    : 'In Progress'}
                 </Button>
               </View>
             </Card.Content>
             <Card.Actions />
           </Card>
-          <Button style={{ marginBottom: 10 }} mode="contained">
-            Save Changes
+          <Button
+            style={{ marginBottom: 10 }}
+            mode="contained"
+            onPress={!todo?.id ? onAdd : onSaveChanges}
+          >
+            {!todo?.id ? 'Add Todo' : 'Save Changes'}
           </Button>
           <Button
             style={{ marginBottom: 10 }}
             mode="contained"
             color={getColor('danger')}
+            onPress={onDelete}
           >
             Delete
           </Button>
@@ -106,4 +156,31 @@ function TodoDetail({ route }) {
   )
 }
 
-export default connect()(TodoDetail)
+function mapStateToProps({ todos }, { route }) {
+  const { id } = route.params
+
+  // find the todo associated with the id passed in via
+  // navigation parameters and return it as a prop
+  return {
+    todo: todos.find((todo) => todo.id === id),
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    update: (todo) => {
+      dispatch(updateTodo(todo))
+    },
+    add: (todo) => {
+      dispatch(addTodo(todo))
+    },
+    remove: (id) => {
+      dispatch(deleteTodo(id))
+    },
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TodoDetail)
