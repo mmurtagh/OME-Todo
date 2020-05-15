@@ -1,4 +1,5 @@
 import moment from 'moment'
+import AsyncStorage from '@react-native-community/async-storage'
 
 import {
   ADD_TODO,
@@ -16,7 +17,9 @@ const initialState = {
       id: '1',
       name: 'Call Mom',
       description: 'Her birthday is on 11/30',
-      targetDate: moment().endOf('day'),
+      targetDate: moment()
+        .endOf('day')
+        .format(),
       completionDate: null,
     },
   ],
@@ -28,7 +31,7 @@ const initialState = {
   },
 }
 
-export function mainReducer(state, action) {
+export function rootReducer(state, action) {
   if (state === undefined) {
     return initialState
   }
@@ -54,7 +57,7 @@ export function mainReducer(state, action) {
     // find the appropriate todo and set its completionDate to now
     const updatedTodos = state.todos.map((todo) => {
       if (todo.id === id) {
-        return { ...todo, completionDate: Date.now() }
+        return { ...todo, completionDate: moment(Date.now()).format() }
       }
 
       return todo
@@ -66,7 +69,7 @@ export function mainReducer(state, action) {
   function deleteTodo(state, { id }) {
     // filter out the deleted todo from the current todos
     const filteredTodos = state.todos.filter((todo) => {
-      todo.id !== action.id
+      return todo.id !== action.id
     })
 
     return { ...state, todos: filteredTodos }

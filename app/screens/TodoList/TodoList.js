@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import momentPropTypes from 'react-moment-proptypes'
 import { FlatList, StyleSheet } from 'react-native'
 import { connect } from 'react-redux'
 import { View } from 'react-native'
@@ -84,8 +83,8 @@ TodoList.propTypes = {
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       description: PropTypes.string,
-      targetDate: momentPropTypes.momentObj,
-      completionDate: momentPropTypes.momentObj,
+      targetDate: PropTypes.string,
+      completionDate: PropTypes.string,
     })
   ).isRequired,
   filter: PropTypes.shape({

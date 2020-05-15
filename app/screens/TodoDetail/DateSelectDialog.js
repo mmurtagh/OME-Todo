@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import moment from 'moment'
 import PropTypes from 'prop-types'
-import momentPropTypes from 'react-moment-proptypes'
 import { Button, Checkbox, Dialog, Portal } from 'react-native-paper'
 import { getColor, spacing } from '../../resources/style'
 import DatePicker from '@react-native-community/datetimepicker'
@@ -31,7 +31,7 @@ export default function DateSelectDialog({
     const setDate =
       mode === dialogMode.targetDate ? setTargetDate : setCompletionDate
 
-    setDate(isChecked ? null : date)
+    setDate(isChecked ? null : moment(date).format())
     onHide()
   }
 
@@ -94,8 +94,8 @@ export default function DateSelectDialog({
 DateSelectDialog.propTypes = {
   onHide: PropTypes.func.isRequired,
   mode: PropTypes.string.isRequired,
-  targetDate: momentPropTypes.momentObj,
-  completionDate: momentPropTypes.momentObj,
+  targetDate: PropTypes.string,
+  completionDate: PropTypes.string,
   setCompletionDate: PropTypes.func.isRequired,
   setTargetDate: PropTypes.func.isRequired,
 }
