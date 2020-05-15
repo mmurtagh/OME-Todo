@@ -58,3 +58,35 @@ npx react-native run-android
 ```
 
 #
+
+## Important Packages Used
+
+### @react-native-community/async-storage
+Used in conjunction with `redux-persist` to persist the redux store on app close
+
+### @react-native-community/datetimepicker
+Used in the Todo Detail screen for selecting dates
+
+## color
+Used to make working with colors easier
+
+## lodash.debounce
+Used to debounce search bar entries. Makes the search feature more efficient and smoother
+
+## prop-types
+Used to declare prop types for components
+
+## moment
+Used to make working with and formatting dates easier
+
+## react-native-paper
+Main UI package.
+
+## react-native-vector-icons
+React native paper dependency. All icons in the app stem from this
+
+## react-redux
+Used for state management
+
+## redux-persist
+Used to persist the redux store on app close
