@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import momentPropTypes from 'react-moment-proptypes'
 import { connect } from 'react-redux'
 import { View, SafeAreaView, StyleSheet } from 'react-native'
 import {
@@ -156,7 +155,7 @@ function TodoDetail({ todo, update, add, remove, navigation }) {
           <Card style={{ marginBottom: spacing() }}>
             <Card.Content>
               <View style={styles.dateSelectContainer}>
-                <Subheading>{`${getContent('completionDate')}:`}:</Subheading>
+                <Subheading>{`${getContent('completionDate')}:`}</Subheading>
                 <Button
                   mode="text"
                   icon="pencil"
@@ -195,8 +194,8 @@ TodoDetail.propTypes = {
     id: PropTypes.string,
     name: PropTypes.string,
     description: PropTypes.string,
-    targetDate: momentPropTypes.momentObj,
-    completionDate: momentPropTypes.momentObj,
+    targetDate: PropTypes.string,
+    completionDate: PropTypes.string,
   }),
   update: PropTypes.func.isRequired,
   add: PropTypes.func.isRequired,

@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 import { sortByOptions } from '../../redux/actions'
 
 export function filterAndSortTodos(todos, filter) {
@@ -39,12 +41,12 @@ export function filterAndSortTodos(todos, filter) {
         if (!aTargetDate) return 1
         if (!bTargetDate) return -1
 
-        return aTargetDate < bTargetDate
+        return moment(aTargetDate).utc() < moment(bTargetDate).utc()
       case sortByOptions.targetDateAsc:
         if (!aTargetDate) return 1
         if (!bTargetDate) return -1
 
-        return aTargetDate > bTargetDate
+        return moment(aTargetDate).utc() > moment(bTargetDate).utc()
       default:
         return true
     }

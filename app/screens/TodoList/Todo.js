@@ -1,7 +1,6 @@
 import React from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import momentPropTypes from 'react-moment-proptypes'
 import { StyleSheet, View } from 'react-native'
 import {
   Button,
@@ -58,7 +57,10 @@ export default function Todo({
   if (completionDate) {
     variant = variants.completed
     cardStyle = styles.completedTodo
-  } else if (targetDate && Date.now() > targetDate) {
+  } else if (
+    targetDate &&
+    moment(Date.now()).utc() > moment(targetDate).utc()
+  ) {
     variant = variants.overDue
     cardStyle = styles.overdueTodo
   }
@@ -143,6 +145,6 @@ Todo.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   description: PropTypes.string,
-  targetDate: momentPropTypes.momentObj,
-  completionDate: momentPropTypes.momentObj,
+  targetDate: PropTypes.string,
+  completionDate: PropTypes.string,
 }
