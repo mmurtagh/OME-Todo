@@ -42,6 +42,17 @@ const styles = StyleSheet.create({
   subheading: { fontWeight: 'bold', paddingRight: spacing() },
 })
 
+// @name Todo
+// @description
+// Component representing a single todo item in a todo list
+// Can style as a normal todo, a complete todo, or an overdue todo
+// @params {string} id - id of the todo
+// @params {string} name - name of the todo; will always have a non-null value
+// @params {string} description - description of the todo; may be null
+// @params {string} targetDate - target date of the todo; may be null
+// @params {string} completionDate - completion date of the todo; may be null
+// @params {obj} navigation - navigation object provided by react-navigation
+// @params {fn} complete - function used to complete the todo
 export default function Todo({
   id,
   name,
@@ -54,6 +65,7 @@ export default function Todo({
   let variant = variants.inProgress
   let cardStyle = styles.normalTodo
 
+  // determine the variant of the todo (in progress, complete, overdue) for use in styling
   if (completionDate) {
     variant = variants.completed
     cardStyle = styles.completedTodo

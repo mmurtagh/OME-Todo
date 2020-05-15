@@ -2,6 +2,14 @@ import moment from 'moment'
 
 import { sortByOptions } from '../../redux/actions'
 
+// @name filterAndSortTodos
+// @description
+// function used to filter and sort the list of todos given a particular
+// filter object.
+// @params {array} todos - list of todos to filter and sort
+// @params {obj} filter - filter object containing properties that can be used to
+// filter and sort the todos
+// @returns {arr} - array of filtered and sorted todos
 export function filterAndSortTodos(todos, filter) {
   const { showInProgress, showCompleted, searchString, sortBy } = filter
   const filteredTodos = todos.filter(({ completionDate, name }) => {
@@ -34,7 +42,7 @@ export function filterAndSortTodos(todos, filter) {
       case sortByOptions.nameDesc:
         return aName.localeCompare(bName)
       case sortByOptions.nameAsc:
-        return !aName.localeCompare(bName)
+        return bName.localeCompare(aName)
       case sortByOptions.targetDateDesc:
         // if sorting by target date push all todos
         // with no target date to the botto of the list

@@ -105,6 +105,12 @@ function setFilter(state, { filter }) {
   return { ...state, filter: { ...state.filter, ...filter } }
 }
 
+// reset all filters except for the search string which is technically
+// a filter, but unexpected behavior from pressing the "Reset Filters"
+// button
 function resetFilter(state) {
-  return { ...state, filter: initialState.filter }
+  return {
+    ...state,
+    filter: { ...initialState.filter, searchString: state.filter.searchString },
+  }
 }

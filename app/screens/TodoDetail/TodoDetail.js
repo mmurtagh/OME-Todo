@@ -4,12 +4,12 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { View, SafeAreaView, StyleSheet } from 'react-native'
 import {
-  Card,
-  TextInput,
   Button,
-  Subheading,
-  Portal,
   Caption,
+  Card,
+  Portal,
+  Subheading,
+  TextInput,
 } from 'react-native-paper'
 import { getColor, spacing } from '../../resources/style'
 import DatePicker from './DatePicker'
@@ -38,8 +38,12 @@ const styles = StyleSheet.create({
   validationContainer: { paddingBottom: spacing() },
 })
 
+// We use different modes to drive the behavior of the
+// date picker dialog.
 const dialogModes = { target: 'TARGET', completion: 'COMPLETION', none: 'NONE' }
 
+// if we're adding a new todo, make the title say "New Todo"
+// if were editing an existing todo, make the title say "Edit Todo"
 TodoDetail.navigationOptions = ({ route }) => {
   const { id } = route.params
 
@@ -53,6 +57,17 @@ TodoDetail.navigationOptions = ({ route }) => {
   }
 }
 
+// @name TodoDetail
+// @description
+// Screen component used to both edit and add new todos.
+// Allows the user to associated a name, description, target date,
+// and completion date with a todo. Name is the only required field
+// @params {obj} todo - the todo object that is being edits. defaults to
+// an empty object when creating a new todo
+// @params {fn} update - function used to update an existing todo.
+// @params {fn} add - function used to add a new todo.
+// @params {fn} remove - function used to remove an existing todo
+// @params {obj} navigation - navigation object provided by react-navigation
 function TodoDetail({ todo, update, add, remove, navigation }) {
   const [dialogMode, setDialogMode] = useState(dialogModes.none)
   const [name, setName] = useState(todo.name)
@@ -63,6 +78,7 @@ function TodoDetail({ todo, update, add, remove, navigation }) {
   )
   const [isNameErrored, setIsNameErrored] = useState(false)
 
+  // Called when "Add Todo" button is pressed
   const onAdd = () => {
     if (!name) {
       setIsNameErrored(true)
@@ -81,6 +97,7 @@ function TodoDetail({ todo, update, add, remove, navigation }) {
     add(newTodo)
   }
 
+  // Called when "Save Changes" button is pressed
   const onSaveChanges = () => {
     if (!name) {
       setIsNameErrored(true)
@@ -100,6 +117,7 @@ function TodoDetail({ todo, update, add, remove, navigation }) {
     update(modifiedTodo)
   }
 
+  // Called when "Delete" button is pressed
   const onDelete = () => {
     navigation.goBack()
     remove(todo.id)
