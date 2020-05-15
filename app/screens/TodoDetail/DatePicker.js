@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
 import moment from 'moment'
-import PropTypes from 'prop-types'
-import { Button, Checkbox, Dialog, Portal } from 'react-native-paper'
-import { getColor, spacing } from '../../resources/style'
+import { Button, Dialog, Portal } from 'react-native-paper'
+import { getColor } from '../../resources/style'
 import RNDatePicker from '@react-native-community/datetimepicker'
 import { getContent } from '../../resources/content'
 

@@ -28,8 +28,16 @@ function App() {
         <NavigationContainer>
           <PaperProvider theme={theme}>
             <Stack.Navigator initialRouteName="MainScreen">
-              <Stack.Screen name="TodoList" component={TodoList} />
-              <Stack.Screen name="TodoDetail" component={TodoDetail} />
+              <Stack.Screen
+                name="TodoList"
+                options={TodoList.navigationOptions}
+                component={TodoList}
+              />
+              <Stack.Screen
+                name="TodoDetail"
+                options={TodoDetail.navigationOptions}
+                component={TodoDetail}
+              />
             </Stack.Navigator>
           </PaperProvider>
         </NavigationContainer>

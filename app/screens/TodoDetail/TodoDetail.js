@@ -40,6 +40,19 @@ const styles = StyleSheet.create({
 
 const dialogModes = { target: 'TARGET', completion: 'COMPLETION', none: 'NONE' }
 
+TodoDetail.navigationOptions = ({ route }) => {
+  const { id } = route.params
+
+  let headerTitle = getContent('editTodo')
+  if (id === null) {
+    headerTitle = getContent('newTodo')
+  }
+
+  return {
+    headerTitle,
+  }
+}
+
 function TodoDetail({ todo, update, add, remove, navigation }) {
   const [dialogMode, setDialogMode] = useState(dialogModes.none)
   const [name, setName] = useState(todo.name)
@@ -208,14 +221,16 @@ function TodoDetail({ todo, update, add, remove, navigation }) {
           >
             {!todo?.id ? getContent('addTodo') : getContent('saveChanges')}
           </Button>
-          <Button
-            style={styles.bottomMargin}
-            mode="contained"
-            color={getColor('danger')}
-            onPress={onDelete}
-          >
-            {getContent('delete')}
-          </Button>
+          {!!todo?.id && (
+            <Button
+              style={styles.bottomMargin}
+              mode="contained"
+              color={getColor('danger')}
+              onPress={onDelete}
+            >
+              {getContent('delete')}
+            </Button>
+          )}
         </View>
       </SafeAreaView>
     </Portal.Host>
