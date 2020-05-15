@@ -3,7 +3,15 @@ import PropTypes from 'prop-types'
 import { FlatList, StyleSheet } from 'react-native'
 import { connect } from 'react-redux'
 import { View } from 'react-native'
-import { FAB, Searchbar, IconButton, Portal } from 'react-native-paper'
+import {
+  Card,
+  FAB,
+  IconButton,
+  Portal,
+  Searchbar,
+  Subheading,
+  Title,
+} from 'react-native-paper'
 import debounce from 'lodash.debounce'
 
 import Todo from './Todo'
@@ -15,6 +23,8 @@ import { filterAndSortTodos } from './utils'
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: spacing() },
+  emptyList: { alignItems: 'center' },
+  emptyListSubheading: { textAlign: 'center' },
   fab: {
     zIndex: 1,
     position: 'absolute',
@@ -35,6 +45,15 @@ TodoList.navigationOptions = ({ route }) => {
   }
 }
 
+// @name TodoList
+// @description
+// Screen component used to show the user's list of todos.
+// Todos in the list can be sorted/filtered using the filter button beside the search bar
+// @params {obj} navigation - navigation object provided by react-navigation
+// @params {array} todos - the array of all todos provided by the redux store
+// @params {obj} filter - the filter object provided by the redux store
+// @params {fn} completeTodo - function use to complete a todo. Passed down to each Todo component
+// @params {fn} search - function used to search for substrings witin the names of todos
 function TodoList({ navigation, todos, filter, completeTodo, search }) {
   const [isDialogVisible, setIsDialogVisible] = useState(false)
 
@@ -46,11 +65,23 @@ function TodoList({ navigation, todos, filter, completeTodo, search }) {
     return <Todo navigation={navigation} {...item} complete={completeTodo} />
   }
 
+  // Component that renders when there's no todos that match the current filter
+  const renderEmptyList = () => (
+    <Card>
+      <Card.Content style={styles.emptyList}>
+        <Title>{getContent('noResults')}</Title>
+        <Subheading style={styles.emptyListSubheading}>
+          {getContent('noResultsHelp')}
+        </Subheading>
+      </Card.Content>
+    </Card>
+  )
+
   return (
     <Portal.Host>
       <FilterDialog
         isVisible={isDialogVisible}
-        onHide={() => setIsDialogVisible(false)}
+        hide={() => setIsDialogVisible(false)}
       />
       <FAB
         style={styles.fab}
@@ -77,6 +108,7 @@ function TodoList({ navigation, todos, filter, completeTodo, search }) {
           data={filterAndSortTodos(todos, filter)}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
+          ListEmptyComponent={renderEmptyList()}
         />
       </View>
     </Portal.Host>

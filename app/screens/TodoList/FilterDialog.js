@@ -32,11 +32,22 @@ const styles = StyleSheet.create({
   },
 })
 
-function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
+// @name FilterDialog
+// @description
+// Modal component used to set the filters within the
+// implementation of RNDatePicker
+// @params {bool} isVisible - whether or not the modal is currently visible
+// @params {fn} hide - function that hides the modal when called
+// @params {obj} filter - the filter object from the redux store
+// @params {fn} apply - function used to apply new filters
+// @params {fn} reset - function used to reset filters to defaults
+function FilterDialog({ isVisible, hide, filter, apply, reset }) {
   const [sortBy, setSortBy] = useState(filter.sortBy)
   const [showInProgress, setShowInProgress] = useState(filter.showInProgress)
   const [showCompleted, setShowCompleted] = useState(filter.showCompleted)
 
+  // When modal becomes visible, we need to set all options back to
+  // current value of filter
   useEffect(() => {
     if (isVisible) {
       setSortBy(filter.sortBy)
@@ -45,6 +56,7 @@ function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
     }
   }, [isVisible])
 
+  // called when user presses the "Apply" button
   onApply = () => {
     apply({
       showInProgress,
@@ -52,12 +64,13 @@ function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
       sortBy,
     })
 
-    onHide()
+    hide()
   }
 
+  // called when user presses the "Reset Filters" button
   onReset = () => {
     reset()
-    onHide()
+    hide()
   }
 
   const radioButtons = () => {
@@ -73,7 +86,7 @@ function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
 
   return (
     <Portal>
-      <Dialog visible={isVisible} onDismiss={onHide}>
+      <Dialog visible={isVisible} onDismiss={hide}>
         <Dialog.Title>{getContent('filters')}</Dialog.Title>
         <Dialog.Content>
           <View style={styles.switchContainer}>
@@ -110,7 +123,7 @@ function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
             color={getColor('danger')}
             style={{ marginRight: spacing('small') }}
             mode="text"
-            onPress={onHide}
+            onPress={hide}
           >
             {getContent('cancel')}
           </Button>
@@ -130,7 +143,7 @@ function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
 
 FilterDialog.propTypes = {
   isVisible: PropTypes.bool.isRequired,
-  onHide: PropTypes.func.isRequired,
+  hide: PropTypes.func.isRequired,
   filter: PropTypes.shape({
     showInProgress: PropTypes.bool,
     showCompleted: PropTypes.bool,

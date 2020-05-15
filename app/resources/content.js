@@ -29,6 +29,8 @@ const content = {
   targetDateAsc: 'Target Date Ascending',
   targetDateDesc: 'Target Date Descending',
   todoInProgress: 'This todo is in progress',
+  noResults: 'No results',
+  noResultsHelp: 'Try changing your filters or adding some new todos',
 }
 
 export function getContent(key) {

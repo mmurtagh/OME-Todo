@@ -21,6 +21,14 @@ const theme = {
   },
 }
 
+// @name App
+// @description
+// Main application component defining the navigation structure. Wraps the app in the following
+// Provider: hooks the application into the redux store
+// PersistGate: allows the redux store to be loaded from AsyncStorage before the initialization
+// of the app
+// NavigationContainer: allows the app to implement navigation as defined by react-navigation
+// PaperProvider: provides app-wide theming to all react-native-paper components
 function App() {
   return (
     <Provider store={store}>
