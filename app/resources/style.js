@@ -16,3 +16,13 @@ export function getColor(name, isLight = false) {
 
   return color.hex()
 }
+
+export function spacing(variant) {
+  const base = 10
+
+  if (variant === 'small') return base / 2
+  if (variant === 'large') return base * 1.5
+  if (variant === 'xlarge') return base * 2
+
+  return base
+}

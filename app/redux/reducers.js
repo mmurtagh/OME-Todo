@@ -23,7 +23,6 @@ const initialState = {
   filter: {
     showInProgress: true,
     showCompleted: false,
-    showOverdue: true,
     searchString: null,
     sortBy: sortByOptions.nameDesc,
   },

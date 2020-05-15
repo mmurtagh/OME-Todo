@@ -1,25 +1,47 @@
-import React, { useState } from 'react'
+import React from 'react'
 import moment from 'moment'
-import { View } from 'react-native'
+import PropTypes from 'prop-types'
+import momentPropTypes from 'react-moment-proptypes'
+import { StyleSheet, View } from 'react-native'
 import {
   Button,
   Card,
-  Caption,
-  Text,
+  Divider,
+  Headline,
   IconButton,
   Paragraph,
-  Headline,
   Subheading,
-  Divider,
+  Text,
 } from 'react-native-paper'
 
-import { getColor } from '../../resources/colors'
+import { getColor, spacing } from '../../resources/style'
+import { getContent } from '../../resources/content'
 
 const variants = {
   inProgress: 'IN_PROGRESS',
   completed: 'COMPLETED',
   overDue: 'OVERDUE',
 }
+
+const styles = StyleSheet.create({
+  bold: { fontWeight: 'bold' },
+  completeButton: { flex: 1, marginLeft: spacing('small') },
+  completedTodo: {
+    marginBottom: spacing('small'),
+    backgroundColor: getColor('success', true),
+  },
+  descriptionContainer: { flexDirection: 'row' },
+  editButtonWithComplete: { flex: 1, marginRight: spacing('small') },
+  labelValueContainer: { flexDirection: 'row', alignItems: 'center' },
+  normalTodo: { marginBottom: spacing('small'), backgroundColor: '#fff' },
+  overdueTodo: {
+    marginBottom: spacing('small'),
+    backgroundColor: getColor('danger', true),
+  },
+  rowContainer: { flexDirection: 'row', alignItems: 'center' },
+  soloEditButton: { flex: 1 },
+  subheading: { fontWeight: 'bold', paddingRight: spacing() },
+})
 
 export default function Todo({
   id,
@@ -31,17 +53,14 @@ export default function Todo({
   complete,
 }) {
   let variant = variants.inProgress
+  let cardStyle = styles.normalTodo
+
   if (completionDate) {
     variant = variants.completed
+    cardStyle = styles.completedTodo
   } else if (targetDate && Date.now() > targetDate) {
     variant = variants.overDue
-  }
-
-  let backgroundColor = 'white'
-  if (variant === variants.completed) {
-    backgroundColor = getColor('success', true)
-  } else if (variant === variants.overDue) {
-    backgroundColor = getColor('danger', true)
+    cardStyle = styles.overdueTodo
   }
 
   const getVariantIcon = () => {
@@ -56,45 +75,25 @@ export default function Todo({
   }
 
   return (
-    <Card
-      style={{
-        marginBottom: 5,
-        backgroundColor: backgroundColor,
-      }}
-    >
+    <Card style={cardStyle}>
       <Card.Content>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
-          <Headline style={{ fontWeight: 'bold' }}>{name}</Headline>
+        <View style={styles.labelValueContainer}>
+          <Headline style={styles.bold}>{name}</Headline>
           {getVariantIcon()}
         </View>
         <Divider />
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
-          <Subheading style={{ fontWeight: 'bold', paddingRight: 10 }}>
-            Target Date:
-          </Subheading>
-          <Text>{targetDate ? moment(targetDate).format('ll') : 'None'}</Text>
+        <View style={styles.labelValueContainer}>
+          <Subheading style={styles.subheading}>Target Date:</Subheading>
+          <Text>
+            {targetDate ? moment(targetDate).format('ll') : getContent('none')}
+          </Text>
         </View>
-        <Divider />
         {variant === variants.completed && (
           <>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <Subheading style={{ fontWeight: 'bold', paddingRight: 10 }}>
-                Completion Date:
+            <Divider />
+            <View style={styles.labelValueContainer}>
+              <Subheading style={styles.subheading}>
+                {`${getContent('completionDate')}:`}
               </Subheading>
               <Text>{moment(completionDate).format('ll')}</Text>
             </View>
@@ -103,17 +102,11 @@ export default function Todo({
         {!!description && (
           <>
             <Divider />
-            <View
-              style={{
-                flexDirection: 'row',
-              }}
-            >
-              <Subheading style={{ fontWeight: 'bold', paddingRight: 10 }}>
-                Description:
+            <View style={styles.descriptionContainer}>
+              <Subheading style={styles.subheading}>
+                {`${getContent('description')}:`}
               </Subheading>
-              {!!description && (
-                <Paragraph style={{ flex: 1 }}>{description}</Paragraph>
-              )}
+              <Paragraph style={{ flex: 1 }}>{description}</Paragraph>
             </View>
           </>
         )}
@@ -121,26 +114,35 @@ export default function Todo({
       <Card.Actions>
         <Button
           color={getColor('primary')}
-          style={{
-            flex: 1,
-            marginRight: variant === variants.completed ? 0 : 5,
-          }}
+          style={
+            variant === variants.completed
+              ? styles.soloEditButton
+              : styles.editButtonWithComplete
+          }
           icon="pencil"
           onPress={() => navigation.navigate('TodoDetail', { id })}
         >
-          Edit
+          {getContent('edit')}
         </Button>
         {variant !== variants.completed && (
           <Button
             icon="check-bold"
             color={getColor('success')}
-            style={{ flex: 1, marginLeft: 5 }}
+            style={styles.completeButton}
             onPress={() => complete(id)}
           >
-            Complete
+            {getContent('complete')}
           </Button>
         )}
       </Card.Actions>
     </Card>
   )
+}
+
+Todo.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  targetDate: momentPropTypes.momentObj,
+  completionDate: momentPropTypes.momentObj,
 }
