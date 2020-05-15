@@ -12,17 +12,20 @@ import {
   Caption,
 } from 'react-native-paper'
 import { getColor, spacing } from '../../resources/style'
-import DateSelectDialog, { dialogMode } from './DateSelectDialog'
+import DatePicker from './DatePicker'
 import { addTodo, deleteTodo, updateTodo } from '../../redux/actions'
 import { getContent } from '../../resources/content'
 
 const styles = StyleSheet.create({
   bottomMargin: { marginBottom: spacing() },
   bottomPadding: { paddingBottom: spacing() },
+  buttonContainer: { flexDirection: 'row', justifyContent: 'space-around' },
   container: { flex: 1 },
+  date: { fontWeight: 'bold' },
+  labelSubheading: { paddingRight: spacing() },
   dateSelectContainer: {
+    paddingBottom: spacing(),
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   padding: { padding: spacing() },
@@ -35,8 +38,10 @@ const styles = StyleSheet.create({
   validationContainer: { paddingBottom: spacing() },
 })
 
+const dialogModes = { target: 'TARGET', completion: 'COMPLETION', none: 'NONE' }
+
 function TodoDetail({ todo, update, add, remove, navigation }) {
-  const [currentMode, setCurrentMode] = useState(dialogMode.hidden)
+  const [dialogMode, setDialogMode] = useState(dialogModes.none)
   const [name, setName] = useState(todo.name)
   const [description, setDescription] = useState(todo.description)
   const [targetDate, setTargetDate] = useState(todo.targetDate || null)
@@ -89,13 +94,15 @@ function TodoDetail({ todo, update, add, remove, navigation }) {
 
   return (
     <Portal.Host>
-      <DateSelectDialog
-        mode={currentMode}
-        onHide={() => setCurrentMode(dialogMode.hidden)}
-        targetDate={targetDate}
-        completionDate={completionDate}
-        setTargetDate={setTargetDate}
-        setCompletionDate={setCompletionDate}
+      <DatePicker
+        isVisible={dialogMode !== dialogModes.none}
+        apply={
+          dialogMode === dialogModes.target ? setTargetDate : setCompletionDate
+        }
+        hide={() => setDialogMode(dialogModes.none)}
+        currentDate={
+          dialogMode === dialogModes.target ? targetDate : completionDate
+        }
       />
       <SafeAreaView style={styles.container}>
         <View style={styles.padding}>
@@ -139,15 +146,28 @@ function TodoDetail({ todo, update, add, remove, navigation }) {
           <Card style={styles.bottomMargin}>
             <Card.Content>
               <View style={styles.dateSelectContainer}>
-                <Subheading>{`${getContent('targetDate')}:`}</Subheading>
-                <Button
-                  mode="text"
-                  icon="pencil"
-                  onPress={() => setCurrentMode(dialogMode.targetDate)}
-                >
+                <Subheading style={styles.labelSubheading}>{`${getContent(
+                  'targetDate'
+                )}:`}</Subheading>
+                <Subheading style={styles.date}>
                   {targetDate
                     ? moment(targetDate).format('ll')
                     : getContent('none')}
+                </Subheading>
+              </View>
+              <View style={styles.buttonContainer}>
+                <Button
+                  onPress={() => setDialogMode(dialogModes.target)}
+                  mode="contained"
+                >
+                  {getContent('chooseDate')}
+                </Button>
+                <Button
+                  onPress={() => setTargetDate(null)}
+                  mode="contained"
+                  color={getColor('danger')}
+                >
+                  {getContent('clearDate')}
                 </Button>
               </View>
             </Card.Content>
@@ -155,15 +175,28 @@ function TodoDetail({ todo, update, add, remove, navigation }) {
           <Card style={{ marginBottom: spacing() }}>
             <Card.Content>
               <View style={styles.dateSelectContainer}>
-                <Subheading>{`${getContent('completionDate')}:`}</Subheading>
-                <Button
-                  mode="text"
-                  icon="pencil"
-                  onPress={() => setCurrentMode(dialogMode.completionDate)}
-                >
+                <Subheading style={styles.labelSubheading}>{`${getContent(
+                  'completionDate'
+                )}:`}</Subheading>
+                <Subheading style={styles.date}>
                   {completionDate
                     ? moment(completionDate).format('ll')
                     : getContent('inProgress')}
+                </Subheading>
+              </View>
+              <View style={styles.buttonContainer}>
+                <Button
+                  onPress={() => setDialogMode(dialogModes.completion)}
+                  mode="contained"
+                >
+                  {getContent('chooseDate')}
+                </Button>
+                <Button
+                  onPress={() => setCompletionDate(null)}
+                  mode="contained"
+                  color={getColor('danger')}
+                >
+                  {getContent('clearDate')}
                 </Button>
               </View>
             </Card.Content>
