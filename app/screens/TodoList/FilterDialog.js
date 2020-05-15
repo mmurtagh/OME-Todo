@@ -1,40 +1,47 @@
 import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import {
   Button,
   Dialog,
-  Headline,
   Portal,
   RadioButton,
-  Text,
   Title,
   Switch,
   Subheading,
   Divider,
 } from 'react-native-paper'
-import { getColor } from '../../resources/colors'
+import { getColor, spacing } from '../../resources/style'
 import { sortByOptions, setFilter, resetFilter } from '../../redux/actions'
+import { getContent } from '../../resources/content'
 
 const sortByLabels = {
-  [sortByOptions.nameDesc]: 'Name Descending',
-  [sortByOptions.nameAsc]: 'Name Ascending',
-  [sortByOptions.targetDateDesc]: 'Target Date Descending',
-  [sortByOptions.targetDateAsc]: 'Target Date Ascending',
+  [sortByOptions.nameDesc]: getContent('nameDesc'),
+  [sortByOptions.nameAsc]: getContent('nameAsc'),
+  [sortByOptions.targetDateDesc]: getContent('targetDateDesc'),
+  [sortByOptions.targetDateAsc]: getContent('targetDateAsc'),
 }
+
+const styles = StyleSheet.create({
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: spacing(),
+  },
+})
 
 function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
   const [sortBy, setSortBy] = useState(filter.sortBy)
   const [showInProgress, setShowInProgress] = useState(filter.showInProgress)
   const [showCompleted, setShowCompleted] = useState(filter.showCompleted)
-  const [showOverdue, setShowOverdue] = useState(filter.showOverdue)
 
   useEffect(() => {
     if (isVisible) {
       setSortBy(filter.sortBy)
       setShowInProgress(filter.showInProgress)
       setShowCompleted(filter.showCompleted)
-      setShowOverdue(filter.showOverdue)
     }
   }, [isVisible])
 
@@ -42,7 +49,6 @@ function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
     apply({
       showInProgress,
       showCompleted,
-      showOverdue,
       sortBy,
     })
 
@@ -68,56 +74,27 @@ function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
   return (
     <Portal>
       <Dialog visible={isVisible} onDismiss={onHide}>
-        <Dialog.Title>Filters</Dialog.Title>
+        <Dialog.Title>{getContent('filters')}</Dialog.Title>
         <Dialog.Content>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingBottom: 10,
-            }}
-          >
-            <Subheading>Show In Progress Todos</Subheading>
+          <View style={styles.switchContainer}>
+            <Subheading>{getContent('showInProgress')}</Subheading>
             <Switch
               color={getColor('primary')}
               value={showInProgress}
               onValueChange={() => setShowInProgress(!showInProgress)}
             />
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingBottom: 10,
-            }}
-          >
-            <Subheading>Show Completed Todos</Subheading>
+          <View style={styles.switchContainer}>
+            <Subheading>{getContent('showCompleted')}</Subheading>
             <Switch
               color={getColor('primary')}
               value={showCompleted}
               onValueChange={() => setShowCompleted(!showCompleted)}
             />
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingBottom: 10,
-            }}
-          >
-            <Subheading>Show Overdue Todos</Subheading>
-            <Switch
-              color={getColor('primary')}
-              value={showOverdue}
-              onValueChange={() => setShowOverdue(!showOverdue)}
-            />
-          </View>
-          <Divider style={{ marginBottom: 10 }} />
+          <Divider style={{ marginBottom: spacing }} />
           <RadioButton.Group value={sortBy}>
-            <Title>Sort By</Title>
+            <Title>{getContent('sortBy')}</Title>
             {radioButtons()}
           </RadioButton.Group>
           <Button
@@ -125,30 +102,43 @@ function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
             mode="contained"
             color={getColor('primary')}
           >
-            Reset Filters
+            {getContent('resetFilters')}
           </Button>
         </Dialog.Content>
         <Dialog.Actions>
           <Button
             color={getColor('danger')}
-            style={{ marginRight: 5 }}
+            style={{ marginRight: spacing('small') }}
             mode="text"
             onPress={onHide}
           >
-            Cancel
+            {getContent('cancel')}
           </Button>
           <Button
             color={getColor('primary')}
-            style={{ marginLeft: 5 }}
+            style={{ marginLeft: spacing('small') }}
             mode="text"
             onPress={onApply}
           >
-            Apply
+            {getContent('apply')}
           </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
   )
+}
+
+FilterDialog.propTypes = {
+  isVisible: PropTypes.bool.isRequired,
+  onHide: PropTypes.func.isRequired,
+  filter: PropTypes.shape({
+    showInProgress: PropTypes.bool,
+    showCompleted: PropTypes.bool,
+    searchString: PropTypes.string,
+    sortBy: PropTypes.string,
+  }).isRequired,
+  apply: PropTypes.func.isRequired,
+  reset: PropTypes.func.isRequired,
 }
 
 function mapStateToProps(state) {

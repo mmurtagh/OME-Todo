@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import moment from 'moment'
+import PropTypes from 'prop-types'
+import momentPropTypes from 'react-moment-proptypes'
 import { Button, Checkbox, Dialog, Portal } from 'react-native-paper'
-import { getColor } from '../../resources/colors'
+import { getColor, spacing } from '../../resources/style'
 import DatePicker from '@react-native-community/datetimepicker'
+import { getContent } from '../../resources/content'
 
 export const dialogMode = {
   hidden: 'HIDDEN',
@@ -40,10 +42,12 @@ export default function DateSelectDialog({
 
     const isTargetDate = mode === dialogMode.targetDate
 
-    setTitle(isTargetDate ? 'Target Date' : 'Completion Date')
+    setTitle(
+      isTargetDate ? getContent('targetDate') : getContent('completionDate')
+    )
     setIsChecked(isTargetDate ? !targetDate : !completionDate)
     setCheckboxLabel(
-      isTargetDate ? 'This todo has no target date' : 'This todo is in progress'
+      isTargetDate ? getContent('noTargetDate') : getContent('todoInProgress')
     )
     setDate(isTargetDate ? targetDate : completionDate)
   }, [mode])
@@ -68,17 +72,30 @@ export default function DateSelectDialog({
         <Dialog.Actions>
           <Button
             color={getColor('danger')}
-            style={{ marginRight: 5 }}
+            style={{ marginRight: spacing('small') }}
             mode="text"
             onPress={onHide}
           >
-            Cancel
+            {getContent('cancel')}
           </Button>
-          <Button style={{ marginLeft: 5 }} mode="text" onPress={applyChanges}>
-            Apply
+          <Button
+            style={{ marginLeft: spacing('small') }}
+            mode="text"
+            onPress={applyChanges}
+          >
+            {getContent('apply')}
           </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
   )
+}
+
+DateSelectDialog.propTypes = {
+  onHide: PropTypes.func.isRequired,
+  mode: PropTypes.string.isRequired,
+  targetDate: momentPropTypes.momentObj,
+  completionDate: momentPropTypes.momentObj,
+  setCompletionDate: PropTypes.func.isRequired,
+  setTargetDate: PropTypes.func.isRequired,
 }

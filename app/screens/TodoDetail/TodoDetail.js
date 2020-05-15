@@ -1,23 +1,42 @@
 import React, { useState } from 'react'
 import moment from 'moment'
+import PropTypes from 'prop-types'
+import momentPropTypes from 'react-moment-proptypes'
 import { connect } from 'react-redux'
-import { Text, View, SafeAreaView } from 'react-native'
+import { View, SafeAreaView, StyleSheet } from 'react-native'
 import {
   Card,
-  Title,
   TextInput,
-  Headline,
-  IconButton,
   Button,
   Subheading,
   Portal,
   Caption,
 } from 'react-native-paper'
-import { getColor } from '../../resources/colors'
+import { getColor, spacing } from '../../resources/style'
 import DateSelectDialog, { dialogMode } from './DateSelectDialog'
 import { addTodo, deleteTodo, updateTodo } from '../../redux/actions'
+import { getContent } from '../../resources/content'
 
-function TodoDetail({ todo = {}, update, add, remove, navigation }) {
+const styles = StyleSheet.create({
+  bottomMargin: { marginBottom: spacing() },
+  bottomPadding: { paddingBottom: spacing() },
+  container: { flex: 1 },
+  dateSelectContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  padding: { padding: spacing() },
+  textInput: { paddingBottom: spacing(), backgroundColor: '#fff' },
+  validation: {
+    bottom: 0,
+    position: 'absolute',
+    color: getColor('danger'),
+  },
+  validationContainer: { paddingBottom: spacing() },
+})
+
+function TodoDetail({ todo, update, add, remove, navigation }) {
   const [currentMode, setCurrentMode] = useState(dialogMode.hidden)
   const [name, setName] = useState(todo.name)
   const [description, setDescription] = useState(todo.description)
@@ -28,7 +47,7 @@ function TodoDetail({ todo = {}, update, add, remove, navigation }) {
   const [isNameErrored, setIsNameErrored] = useState(false)
 
   const onAdd = () => {
-    if (!name || name === '') {
+    if (!name) {
       setIsNameErrored(true)
       return
     }
@@ -46,7 +65,7 @@ function TodoDetail({ todo = {}, update, add, remove, navigation }) {
   }
 
   const onSaveChanges = () => {
-    if (!name || name === '') {
+    if (!name) {
       setIsNameErrored(true)
       return
     }
@@ -79,17 +98,17 @@ function TodoDetail({ todo = {}, update, add, remove, navigation }) {
         setTargetDate={setTargetDate}
         setCompletionDate={setCompletionDate}
       />
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ padding: 10 }}>
-          <Card style={{ marginBottom: 10 }}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.padding}>
+          <Card style={styles.bottomMargin}>
             <Card.Content>
-              <View style={{ paddingBottom: 10 }}>
+              <View style={styles.bottomPadding}>
                 <TextInput
                   error={isNameErrored}
                   mode="outlined"
-                  label="Name"
+                  label={getContent('name')}
                   value={name}
-                  style={{ backgroundColor: 'white', paddingBottom: 10 }}
+                  style={styles.textInput}
                   onChangeText={(text) => {
                     setIsNameErrored(false)
                     setName(text)
@@ -101,13 +120,9 @@ function TodoDetail({ todo = {}, update, add, remove, navigation }) {
                   <Caption
                     // set position to absolute to prevent shifting layout
                     // when error message is displayed
-                    style={{
-                      bottom: 0,
-                      position: 'absolute',
-                      color: getColor('danger'),
-                    }}
+                    style={styles.validation}
                   >
-                    Required
+                    {getContent('required')}
                   </Caption>
                 )}
               </View>
@@ -115,44 +130,33 @@ function TodoDetail({ todo = {}, update, add, remove, navigation }) {
                 multiline
                 numberOfLines={5}
                 mode="outlined"
-                label="Description"
+                label={getContent('description')}
                 value={description}
                 onChangeText={(text) => setDescription(text)}
-                style={{ backgroundColor: 'white', paddingBottom: 10 }}
+                style={styles.textInput}
               />
             </Card.Content>
           </Card>
-          <Card style={{ marginBottom: 10 }}>
+          <Card style={styles.bottomMargin}>
             <Card.Content>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <Subheading>Target Date:</Subheading>
+              <View style={styles.dateSelectContainer}>
+                <Subheading>{`${getContent('targetDate')}:`}</Subheading>
                 <Button
                   mode="text"
                   icon="pencil"
                   onPress={() => setCurrentMode(dialogMode.targetDate)}
                 >
-                  {targetDate ? moment(targetDate).format('ll') : 'None'}
+                  {targetDate
+                    ? moment(targetDate).format('ll')
+                    : getContent('none')}
                 </Button>
               </View>
             </Card.Content>
-            <Card.Actions />
           </Card>
-          <Card style={{ marginBottom: 10 }}>
+          <Card style={{ marginBottom: spacing() }}>
             <Card.Content>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <Subheading>Completion Date:</Subheading>
+              <View style={styles.dateSelectContainer}>
+                <Subheading>{`${getContent('completionDate')}:`}:</Subheading>
                 <Button
                   mode="text"
                   icon="pencil"
@@ -160,31 +164,47 @@ function TodoDetail({ todo = {}, update, add, remove, navigation }) {
                 >
                   {completionDate
                     ? moment(completionDate).format('ll')
-                    : 'In Progress'}
+                    : getContent('inProgress')}
                 </Button>
               </View>
             </Card.Content>
-            <Card.Actions />
           </Card>
           <Button
-            style={{ marginBottom: 10 }}
+            style={styles.bottomMargin}
             mode="contained"
             onPress={!todo?.id ? onAdd : onSaveChanges}
           >
-            {!todo?.id ? 'Add Todo' : 'Save Changes'}
+            {!todo?.id ? getContent('addTodo') : getContent('saveChanges')}
           </Button>
           <Button
-            style={{ marginBottom: 10 }}
+            style={styles.bottomMargin}
             mode="contained"
             color={getColor('danger')}
             onPress={onDelete}
           >
-            Delete
+            {getContent('delete')}
           </Button>
         </View>
       </SafeAreaView>
     </Portal.Host>
   )
+}
+
+TodoDetail.propTypes = {
+  todo: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    description: PropTypes.string,
+    targetDate: momentPropTypes.momentObj,
+    completionDate: momentPropTypes.momentObj,
+  }),
+  update: PropTypes.func.isRequired,
+  add: PropTypes.func.isRequired,
+  remove: PropTypes.func.isRequired,
+}
+
+TodoDetail.defaultProps = {
+  todo: {},
 }
 
 function mapStateToProps({ todos }, { route }) {

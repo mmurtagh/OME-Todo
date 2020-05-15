@@ -1,14 +1,34 @@
 import React, { useState } from 'react'
-import { FlatList, SafeAreaView } from 'react-native'
+import PropTypes from 'prop-types'
+import momentPropTypes from 'react-moment-proptypes'
+import { FlatList, StyleSheet } from 'react-native'
 import { connect } from 'react-redux'
-import { Text, View } from 'react-native'
-import { Button, FAB, Searchbar, IconButton, Portal } from 'react-native-paper'
+import { View } from 'react-native'
+import { FAB, Searchbar, IconButton, Portal } from 'react-native-paper'
 import debounce from 'lodash.debounce'
 
 import Todo from './Todo'
 import FilterDialog from './FilterDialog'
-import { getColor } from '../../resources/colors'
-import { completeTodo, setFilter, sortByOptions } from '../../redux/actions'
+import { getColor, spacing } from '../../resources/style'
+import { completeTodo, setFilter } from '../../redux/actions'
+import { getContent } from '../../resources/content'
+import { filterAndSortTodos } from './utils'
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: spacing() },
+  fab: {
+    zIndex: 1,
+    position: 'absolute',
+    marginBottom: 32,
+    marginRight: 16,
+    right: 0,
+    bottom: 0,
+    backgroundColor: getColor('primary'),
+  },
+  header: { flexDirection: 'row' },
+  searchBar: { flex: 1 },
+  list: { marginTop: spacing('small') },
+})
 
 function TodoList({ navigation, todos, filter, completeTodo, search }) {
   const [isDialogVisible, setIsDialogVisible] = useState(false)
@@ -16,69 +36,6 @@ function TodoList({ navigation, todos, filter, completeTodo, search }) {
   const onSearch = debounce((searchString) => {
     search(searchString)
   }, 250)
-
-  const filterAndSortTodos = () => {
-    const {
-      showInProgress,
-      showCompleted,
-      showOverdue,
-      searchString,
-      sortBy,
-    } = filter
-    const filteredTodos = todos.filter(
-      ({ targetDate, completionDate, name }) => {
-        if (!showInProgress && !completionDate) {
-          return false
-        }
-
-        if (!showCompleted && completionDate) {
-          return false
-        }
-
-        if (!showOverdue && targetDate && Date.now() > targetDate) {
-          return false
-        }
-
-        // make search case insensitive
-        if (
-          searchString &&
-          !name.toLowerCase().includes(searchString.toLowerCase())
-        ) {
-          return false
-        }
-
-        return true
-      }
-    )
-
-    return filteredTodos.sort((a, b) => {
-      const aName = a.name
-      const bName = b.name
-      const aTargetDate = a.targetDate
-      const bTargetDate = b.targetDate
-
-      switch (sortBy) {
-        case sortByOptions.nameDesc:
-          return aName.localeCompare(bName)
-        case sortByOptions.nameAsc:
-          return !aName.localeCompare(bName)
-        case sortByOptions.targetDateDesc:
-          // if sorting by target date push all todos
-          // with no target date to the botto of the list
-          if (!aTargetDate) return 1
-          if (!bTargetDate) return -1
-
-          return aTargetDate < bTargetDate
-        case sortByOptions.targetDateAsc:
-          if (!aTargetDate) return 1
-          if (!bTargetDate) return -1
-
-          return aTargetDate > bTargetDate
-        default:
-          return true
-      }
-    })
-  }
 
   const renderItem = ({ item }) => {
     return <Todo navigation={navigation} {...item} complete={completeTodo} />
@@ -91,24 +48,17 @@ function TodoList({ navigation, todos, filter, completeTodo, search }) {
         onHide={() => setIsDialogVisible(false)}
       />
       <FAB
-        style={{
-          zIndex: 1,
-          position: 'absolute',
-          marginBottom: 32,
-          marginRight: 16,
-          right: 0,
-          bottom: 0,
-          backgroundColor: getColor('primary'),
-        }}
+        style={styles.fab}
         icon="plus"
+        // null id implies new todo
         onPress={() => navigation.navigate('TodoDetail', { id: null })}
       />
-      <View style={{ flex: 1, padding: 10 }}>
-        <View style={{ flexDirection: 'row' }}>
+      <View style={styles.container}>
+        <View style={styles.header}>
           <Searchbar
             onChangeText={onSearch}
-            style={{ flex: 1 }}
-            placeholder="Search"
+            style={styles.searchBar}
+            placeholder={getContent('search')}
           />
           <IconButton
             color={getColor('primary')}
@@ -118,14 +68,34 @@ function TodoList({ navigation, todos, filter, completeTodo, search }) {
         </View>
         <FlatList
           showsVerticalScrollIndicator={false}
-          style={{ marginTop: 5 }}
-          data={filterAndSortTodos(todos)}
+          style={styles.list}
+          data={filterAndSortTodos(todos, filter)}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
       </View>
     </Portal.Host>
   )
+}
+
+TodoList.propTypes = {
+  todos: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      description: PropTypes.string,
+      targetDate: momentPropTypes.momentObj,
+      completionDate: momentPropTypes.momentObj,
+    })
+  ).isRequired,
+  filter: PropTypes.shape({
+    showInProgress: PropTypes.bool,
+    showCompleted: PropTypes.bool,
+    searchString: PropTypes.string,
+    sortBy: PropTypes.string,
+  }).isRequired,
+  completeTodo: PropTypes.func.isRequired,
+  search: PropTypes.func.isRequired,
 }
 
 function mapStateToProps(state) {

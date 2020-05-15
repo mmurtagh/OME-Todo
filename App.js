@@ -8,7 +8,7 @@ import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import { store } from './app/redux/store'
 import TodoList from './app/screens/TodoList/TodoList'
 import TodoDetail from './app/screens/TodoDetail/TodoDetail'
-import { getColor } from './app/resources/colors'
+import { getColor } from './app/resources/style'
 
 const Stack = createStackNavigator()
 
