@@ -11,6 +11,8 @@ import {
   Subheading,
   TextInput,
 } from 'react-native-paper'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
 import { getColor, spacing } from '../../resources/style'
 import DatePicker from './DatePicker'
 import { addTodo, deleteTodo, updateTodo } from '../../redux/actions'
@@ -135,7 +137,7 @@ function TodoDetail({ todo, update, add, remove, navigation }) {
           dialogMode === dialogModes.target ? targetDate : completionDate
         }
       />
-      <SafeAreaView style={styles.container}>
+      <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.padding}>
           <Card style={styles.bottomMargin}>
             <Card.Content>
@@ -250,7 +252,7 @@ function TodoDetail({ todo, update, add, remove, navigation }) {
             </Button>
           )}
         </View>
-      </SafeAreaView>
+      </KeyboardAwareScrollView>
     </Portal.Host>
   )
 }
