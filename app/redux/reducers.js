@@ -6,6 +6,8 @@ import {
   UPDATE_TODO,
   SET_FILTER,
   COMPLETE_TODO,
+  RESET_FILTER,
+  sortByOptions,
 } from './actions'
 
 const initialState = {
@@ -18,7 +20,13 @@ const initialState = {
       completionDate: null,
     },
   ],
-  foo: 'bar',
+  filter: {
+    showInProgress: true,
+    showCompleted: false,
+    showOverdue: true,
+    searchString: null,
+    sortBy: sortByOptions.nameDesc,
+  },
 }
 
 export function mainReducer(state, action) {
@@ -28,7 +36,6 @@ export function mainReducer(state, action) {
 
   switch (action.type) {
     case COMPLETE_TODO:
-      console.debug('test')
       return completeTodo(state, action)
     case DELETE_TODO:
       return deleteTodo(state, action)
@@ -36,6 +43,12 @@ export function mainReducer(state, action) {
       return updateTodo(state, action)
     case ADD_TODO:
       return addTodo(state, action)
+    case SET_FILTER:
+      return setFilter(state, action)
+    case RESET_FILTER:
+      return resetFilter(state)
+    default:
+      return state
   }
 
   function completeTodo(state, { id }) {
@@ -74,8 +87,6 @@ export function mainReducer(state, action) {
 
     return { ...state, todos: updatedTodos }
   }
-
-  return state
 }
 
 // For a new todo, we generate an id,
@@ -86,4 +97,12 @@ function addTodo(state, { todo }) {
 
   const todoWithId = { ...todo, id }
   return { ...state, todos: state.todos.concat(todoWithId) }
+}
+
+function setFilter(state, { filter }) {
+  return { ...state, filter: { ...state.filter, ...filter } }
+}
+
+function resetFilter(state) {
+  return { ...state, filter: initialState.filter }
 }

@@ -11,7 +11,6 @@ export const dialogMode = {
 }
 
 export default function DateSelectDialog({
-  isVisible,
   onHide,
   mode,
   targetDate,
@@ -56,8 +55,7 @@ export default function DateSelectDialog({
         <Dialog.Content>
           {!isChecked && (
             <DatePicker
-              minimumDate={Date.now()}
-              value={new Date(date)}
+              value={date === null ? new Date() : new Date(date)}
               onChange={(_, date) => setDate(date)}
             />
           )}

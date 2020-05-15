@@ -11,14 +11,13 @@ import {
   Button,
   Subheading,
   Portal,
+  Caption,
 } from 'react-native-paper'
 import { getColor } from '../../resources/colors'
 import DateSelectDialog, { dialogMode } from './DateSelectDialog'
 import { addTodo, deleteTodo, updateTodo } from '../../redux/actions'
 
-function TodoDetail({ route, todo = {}, update, add, remove, navigation }) {
-  const { data } = route.params
-  const [descriptionValue, setDescriptionValue] = useState('')
+function TodoDetail({ todo = {}, update, add, remove, navigation }) {
   const [currentMode, setCurrentMode] = useState(dialogMode.hidden)
   const [name, setName] = useState(todo.name)
   const [description, setDescription] = useState(todo.description)
@@ -26,8 +25,14 @@ function TodoDetail({ route, todo = {}, update, add, remove, navigation }) {
   const [completionDate, setCompletionDate] = useState(
     todo.completionDate || null
   )
+  const [isNameErrored, setIsNameErrored] = useState(false)
 
   const onAdd = () => {
+    if (!name || name === '') {
+      setIsNameErrored(true)
+      return
+    }
+
     navigation.goBack()
 
     const newTodo = {
@@ -41,6 +46,11 @@ function TodoDetail({ route, todo = {}, update, add, remove, navigation }) {
   }
 
   const onSaveChanges = () => {
+    if (!name || name === '') {
+      setIsNameErrored(true)
+      return
+    }
+
     navigation.goBack()
 
     const modifiedTodo = {
@@ -73,13 +83,34 @@ function TodoDetail({ route, todo = {}, update, add, remove, navigation }) {
         <View style={{ padding: 10 }}>
           <Card style={{ marginBottom: 10 }}>
             <Card.Content>
-              <TextInput
-                mode="outlined"
-                label="Name"
-                value={name}
-                style={{ backgroundColor: 'white', paddingBottom: 10 }}
-                onChangeText={(text) => setName(text)}
-              />
+              <View style={{ paddingBottom: 10 }}>
+                <TextInput
+                  error={isNameErrored}
+                  mode="outlined"
+                  label="Name"
+                  value={name}
+                  style={{ backgroundColor: 'white', paddingBottom: 10 }}
+                  onChangeText={(text) => {
+                    setIsNameErrored(false)
+                    setName(text)
+                  }}
+                  onFocus={() => setIsNameErrored(false)}
+                  onBlur={() => setIsNameErrored(false)}
+                />
+                {isNameErrored && (
+                  <Caption
+                    // set position to absolute to prevent shifting layout
+                    // when error message is displayed
+                    style={{
+                      bottom: 0,
+                      position: 'absolute',
+                      color: getColor('danger'),
+                    }}
+                  >
+                    Required
+                  </Caption>
+                )}
+              </View>
               <TextInput
                 multiline
                 numberOfLines={5}
