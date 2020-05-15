@@ -15,6 +15,12 @@ import {
 
 import { getColor } from '../../resources/colors'
 
+const variants = {
+  inProgress: 'IN_PROGRESS',
+  completed: 'COMPLETED',
+  overDue: 'OVERDUE',
+}
+
 export default function Todo({
   id,
   name,
@@ -24,13 +30,36 @@ export default function Todo({
   navigation,
   complete,
 }) {
-  const isCompleted = !!completionDate
+  let variant = variants.inProgress
+  if (completionDate) {
+    variant = variants.completed
+  } else if (targetDate && Date.now() > targetDate) {
+    variant = variants.overDue
+  }
+
+  let backgroundColor = 'white'
+  if (variant === variants.completed) {
+    backgroundColor = getColor('success', true)
+  } else if (variant === variants.overDue) {
+    backgroundColor = getColor('danger', true)
+  }
+
+  const getVariantIcon = () => {
+    if (variant === variants.inProgress) return null
+
+    const color =
+      variant === variants.completed ? getColor('success') : getColor('danger')
+    const icon =
+      variant === variants.completed ? 'check-outline' : 'alert-circle-outline'
+
+    return <IconButton color={color} icon={icon} />
+  }
 
   return (
     <Card
       style={{
         marginBottom: 5,
-        backgroundColor: isCompleted ? getColor('success', true) : 'white',
+        backgroundColor: backgroundColor,
       }}
     >
       <Card.Content>
@@ -40,12 +69,8 @@ export default function Todo({
             alignItems: 'center',
           }}
         >
-          <Headline style={{ fontWeight: 'bold', paddingRight: 10 }}>
-            {name}
-          </Headline>
-          {!!completionDate && (
-            <IconButton color={getColor('success')} icon="check-bold" />
-          )}
+          <Headline style={{ fontWeight: 'bold' }}>{name}</Headline>
+          {getVariantIcon()}
         </View>
         <Divider />
         <View
@@ -60,7 +85,7 @@ export default function Todo({
           <Text>{targetDate ? moment(targetDate).format('ll') : 'None'}</Text>
         </View>
         <Divider />
-        {isCompleted && (
+        {variant === variants.completed && (
           <>
             <View
               style={{
@@ -96,13 +121,16 @@ export default function Todo({
       <Card.Actions>
         <Button
           color={getColor('primary')}
-          style={{ flex: 1, marginRight: isCompleted ? 0 : 5 }}
+          style={{
+            flex: 1,
+            marginRight: variant === variants.completed ? 0 : 5,
+          }}
           icon="pencil"
           onPress={() => navigation.navigate('TodoDetail', { id })}
         >
           Edit
         </Button>
-        {!isCompleted && (
+        {variant !== variants.completed && (
           <Button
             icon="check-bold"
             color={getColor('success')}
