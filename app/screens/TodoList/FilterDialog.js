@@ -92,7 +92,7 @@ function FilterDialog({ isVisible, onHide, filter, apply, reset }) {
               onValueChange={() => setShowCompleted(!showCompleted)}
             />
           </View>
-          <Divider style={{ marginBottom: spacing }} />
+          <Divider style={{ marginBottom: spacing() }} />
           <RadioButton.Group value={sortBy}>
             <Title>{getContent('sortBy')}</Title>
             {radioButtons()}

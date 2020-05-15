@@ -2,6 +2,8 @@ const content = {
   addTodo: 'Add Todo',
   apply: 'Apply',
   cancel: 'Cancel',
+  chooseDate: 'Choose Date',
+  clearDate: 'Clear Date',
   complete: 'Complete',
   completionDate: 'Completion Date',
   delete: 'Delete',
