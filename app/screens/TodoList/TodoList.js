@@ -29,6 +29,12 @@ const styles = StyleSheet.create({
   list: { marginTop: spacing('small') },
 })
 
+TodoList.navigationOptions = ({ route }) => {
+  return {
+    headerTitle: 'Todo List',
+  }
+}
+
 function TodoList({ navigation, todos, filter, completeTodo, search }) {
   const [isDialogVisible, setIsDialogVisible] = useState(false)
 
